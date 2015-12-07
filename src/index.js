@@ -77,11 +77,6 @@ var Visualization = LightningVisualization.extend({
       this.texture = createTexture(gl, [imgW, imgH], gl.ALPHA, gl.FLOAT);
       this.texture.bind();
       this.shader.uniforms.texture = this.texture;
-
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     },
 
     renderGL: function() {
@@ -120,7 +115,6 @@ var Visualization = LightningVisualization.extend({
      var imPosition, imSize;
 
      this.images.map(function(imageObj) {
-
        self.texture.setPixels(ndarray(new Float32Array(_.map(_.range(imgW * imgH), function() { return Math.random(); })), [imgW, imgH]));
 
        imPosition = [imageObj.x, imageObj.y, imageObj.z];
@@ -129,7 +123,6 @@ var Visualization = LightningVisualization.extend({
        self.positionBuffer.update(self._getBufferRectangle3D(imPosition[0], imPosition[1], imPosition[2], imSize[0], imSize[1]));
 
        gl.drawArrays(gl.TRIANGLES, 0, 6);
-
      });
     },
 
