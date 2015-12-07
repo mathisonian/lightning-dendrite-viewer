@@ -1,0 +1,31 @@
+{
+  "name": "lightning-dendrite",
+  "version": "0.0.0",
+  "dependencies": {
+    "gl-buffer": "^2.1.2",
+    "gl-matrix": "^2.3.1",
+    "gl-now": "^1.4.0",
+    "gl-shader": "^4.1.0",
+    "gl-texture2d": "^2.0.10",
+    "glslify": "^4.0.0",
+    "lightning-client-utils": "^0.6.3",
+    "lightning-visualization": "^0.1.0",
+    "lodash": "^3.8.0",
+    "ndarray": "^1.0.18",
+    "orbit-camera": "^1.0.0"
+  },
+  "keywords": [
+    "lightning-visualization"
+  ],
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "browserify": {
+    "transform": [
+      "glslify"
+    ]
+  },
+  "lightning": {
+    "name": "dendrite"
+  }
+}
