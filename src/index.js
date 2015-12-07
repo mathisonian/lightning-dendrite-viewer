@@ -7,13 +7,13 @@ var InitGL = require('gl-now');
 var glslify = require('glslify');
 
 var createShader = require('gl-shader');
-var createTexture = require("gl-texture2d")
+var createTexture = require('gl-texture2d');
 var createBuffer = require('gl-buffer');
 
-var createOrbitCamera = require("orbit-camera")
+var createOrbitCamera = require('orbit-camera');
 
-var glm = require("gl-matrix")
-var mat4 = glm.mat4
+var glm = require('gl-matrix');
+var mat4 = glm.mat4;
 
 var ndarray = require('ndarray');
 
@@ -50,9 +50,9 @@ var Visualization = LightningVisualization.extend({
           clearColor: [0, 0, 0, 1]
         });
 
-        this.shell.on("gl-init", this.initGL.bind(this));
-        this.shell.on("gl-render", this.renderGL.bind(this));
-        this.shell.on("tick", this.tickGL.bind(this));
+        this.shell.on('gl-init', this.initGL.bind(this));
+        this.shell.on('gl-render', this.renderGL.bind(this));
+        this.shell.on('tick', this.tickGL.bind(this));
     },
 
     initGL: function() {
@@ -94,11 +94,11 @@ var Visualization = LightningVisualization.extend({
       var shell = this.shell;
       var gl = shell.gl;
       var camera = this.camera;
-      if(shell.wasDown("mouse-left")) {
+      if(shell.wasDown('mouse-left')) {
         camera.rotate([shell.mouseX/shell.width-0.5, shell.mouseY/shell.height-0.5],
                       [shell.prevMouseX/shell.width-0.5, shell.prevMouseY/shell.height-0.5])
       }
-      if(shell.wasDown("mouse-right")) {
+      if(shell.wasDown('mouse-right')) {
         camera.pan([2*(shell.mouseX-shell.prevMouseX)/shell.width,
                     2*(shell.mouseY - shell.prevMouseY)/shell.height])
       }
