@@ -1,5 +1,5 @@
 # lightning-dendrite-viewer
-lightning plugin to display movies in 3d space, useful for viewing dendrites
+[lightning](https://github.com/lightning-viz/lightning/) plugin to display movies in 3d space, useful for viewing [dendrites](https://en.wikipedia.org/wiki/Dendrite)
 
 
 ![example gif](./data/WIP.gif)
