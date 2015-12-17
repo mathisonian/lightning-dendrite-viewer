@@ -1,6 +1,6 @@
 {
   "name": "lightning-dendrite",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "dependencies": {
     "bonzo": "^2.0.0",
     "gl-buffer": "^2.1.2",
