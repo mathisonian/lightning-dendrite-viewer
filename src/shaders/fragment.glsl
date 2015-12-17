@@ -2,5 +2,12 @@ precision highp float;
 uniform sampler2D texture;
 varying vec2 texCoord;
 void main() {
-  gl_FragColor = texture2D(texture, texCoord);
+
+  vec4 c = texture2D(texture, texCoord);
+
+  // if (c.r < 0.1) {
+  //   c.a = 0.0;
+  // }
+
+  gl_FragColor = c;
 }
