@@ -5,7 +5,7 @@ void main() {
 
   vec4 c = texture2D(texture, texCoord);
 
-  // if (c.r < 0.1) {
+  // if (c.r < 0.01) {
   //   c.a = 0.0;
   // }
 

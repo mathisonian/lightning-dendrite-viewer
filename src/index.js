@@ -17,6 +17,8 @@ var mat4 = glm.mat4;
 
 var ndarray = require('ndarray');
 
+var bonzo = require('bonzo');
+
 /*
  * Extend the base visualization object
  */
@@ -27,61 +29,70 @@ var Visualization = LightningVisualization.extend({
         };
     },
 
-    onImageLoaded: function() {
-      this.loadedImages += 1;
-      console.log('loaded ' + this.loadedImages + ' images');
-      if (this.loadedImages === this.numImages) {
-        this.imagesLoaded = true;
+    onImageLoaded: function(callback) {
 
-        var self = this;
-        setInterval(function() {
-            self.currentTimestamp = (self.currentTimestamp + 1) % self.numTimepoints;
-        }, 1000 / 30);
+      return function() {
+        this.loadedImages += 1;
+
+        bonzo(this.qwery('#image-count'))
+          .text(this.loadedImages);
+
+        if (this.loadedImages === this.images.length) {
+          this.imagesLoaded = true;
+
+          bonzo(this.qwery('.loading-container'))
+            .remove();
+
+          var self = this;
+
+          callback();
+
+          setInterval(function() {
+              self.currentTimestamp = (self.currentTimestamp + 1) % self.numTimepoints;
+          }, 1000 / 30);
+        }
       }
     },
 
-    loadImages: function() {
-      _.range(this.numWindows).map(function(i) {
-
-        var imageStack = [];
-        _.range(this.numTimepoints).map(function(j) {
-          var url = 'http://i.gif.fm/janelia-images/dendrite/im_z' + (i < 10 ? 0 : '') + i + '_t' + (j < 100 ? 0 : '') + (j < 10 ? 0 : '') + j + '.png';
+    loadImages: function(callback) {
+      this.images = this.images.map(function(url) {
           var img = new Image();
           img.src = url;
-          img.onload = this.onImageLoaded.bind(this);
+          img.onload = this.onImageLoaded(callback).bind(this);
           img.crossOrigin = 'anonymous';
-          imageStack.push(img);
-        }, this);
-        this.images.push(imageStack);
+          return img;
       }, this);
+    },
+
+    getImageAtTime: function(i, t) {
+      return this.images[i * this.numTimepoints + t];
     },
 
     init: function() {
 
       this.loadedImages = 0;
       this.currentTimestamp = 0;
+      this.numTimepoints = this.images.length / this.data.offsets.length;
 
-      this.numTimepoints = 180;
-      this.numWindows = 24;
 
-      this.numImages = this.numTimepoints * this.numWindows;
-      this.imagesLoaded = false;
-      this.images = [];
+      bonzo(this.qwery(this.el))
+        .append('<span class="loading-container">Loaded <span id="image-count">0</span>/' + this.images.length + ' images.</span>"');
 
-      this.loadImages();
+      this.loadImages((function() {
+        this.shell = InitGL({
+          element: this.el,
+          clearColor: [0, 0, 0, 1]
+        });
+
+        this.shell.on('gl-init', this.initGL.bind(this));
+        this.shell.on('gl-render', this.renderGL.bind(this));
+        this.shell.on('tick', this.tickGL.bind(this));
+      }).bind(this));
 
       this.el.style.width = this.width + 'px';
       this.el.style.height = this.height + 'px';
       this.el.style.position = 'relative';
 
-      this.shell = InitGL({
-        element: this.el,
-        clearColor: [0, 0, 0, 1]
-      });
-
-      this.shell.on('gl-init', this.initGL.bind(this));
-      this.shell.on('gl-render', this.renderGL.bind(this));
-      this.shell.on('tick', this.tickGL.bind(this));
     },
 
     initGL: function() {
@@ -115,10 +126,7 @@ var Visualization = LightningVisualization.extend({
       this.shader.uniforms.model = scratch
       this.shader.uniforms.projection = mat4.perspective(scratch, Math.PI/4.0, this.shell.width / this.shell.height, 0.1, 1000.0)
       this.shader.uniforms.view = this.camera.view(scratch)
-
-      if(this.imagesLoaded) {
-        this.renderImages();
-      }
+      this.renderImages();
     },
 
     tickGL: function() {
@@ -145,12 +153,13 @@ var Visualization = LightningVisualization.extend({
      var imPosition;
      var imSize = this.data.windowDimensions;
 
-     this.images.map(function(htmlImageObj, i) {
-       self.texture.setPixels(htmlImageObj[this.currentTimestamp]);
+     _.range(this.data.offsets.length).map(function(i) {
+       this.texture.setPixels(this.getImageAtTime(i, this.currentTimestamp));
        imPosition = this.data.offsets[i];
-       self.positionBuffer.update(self._getBufferRectangle3D(imPosition[0], imPosition[1], imPosition[2] - 140, imSize[0], imSize[1]));
+       this.positionBuffer.update(this._getBufferRectangle3D(imPosition[0], imPosition[1], imPosition[2] - 140, imSize[0], imSize[1]));
        gl.drawArrays(gl.TRIANGLES, 0, 6);
      }, this);
+
     },
 
     _getBufferRectangle: function(x, y, width, height) {

@@ -2,6 +2,7 @@
   "name": "lightning-dendrite",
   "version": "0.0.0",
   "dependencies": {
+    "bonzo": "^2.0.0",
     "gl-buffer": "^2.1.2",
     "gl-matrix": "^2.3.1",
     "gl-now": "^1.4.0",
