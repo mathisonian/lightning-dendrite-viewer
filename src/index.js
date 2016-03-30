@@ -33,7 +33,6 @@ var Visualization = LightningVisualization.extend({
 
       return function() {
         this.loadedImages += 1;
-
         bonzo(this.qwery('#image-count'))
           .text(this.loadedImages);
 
@@ -74,9 +73,8 @@ var Visualization = LightningVisualization.extend({
       this.currentTimestamp = 0;
       this.numTimepoints = this.images.length / this.data.offsets.length;
 
-
       bonzo(this.qwery(this.el))
-        .append('<span class="loading-container">Loaded <span id="image-count">0</span>/' + this.images.length + ' images.</span>"');
+        .append('<span style="margin-left: 100px; margin-top: 100px; display: inline-block" class="loading-container">Loaded <span id="image-count">0</span>/' + this.images.length + ' images.</span>"');
 
       this.loadImages((function() {
         this.shell = InitGL({
@@ -88,9 +86,6 @@ var Visualization = LightningVisualization.extend({
         this.shell.on('gl-render', this.renderGL.bind(this));
         this.shell.on('tick', this.tickGL.bind(this));
       }).bind(this));
-
-      this.el.style.width = this.width + 'px';
-      this.el.style.height = this.height + 'px';
       this.el.style.position = 'relative';
 
     },
@@ -165,6 +160,9 @@ var Visualization = LightningVisualization.extend({
       var shell = this.shell;
       var gl = shell.gl;
       var camera = this.camera;
+      var width = gl.drawingBufferWidth
+      var height = gl.drawingBufferHeight
+      gl.viewport(0, 0, width, height);
       if(shell.wasDown('mouse-left')) {
         camera.rotate([shell.mouseX/shell.width-0.5, shell.mouseY/shell.height-0.5],
                       [shell.prevMouseX/shell.width-0.5, shell.prevMouseY/shell.height-0.5])
