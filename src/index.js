@@ -100,8 +100,38 @@ var Visualization = LightningVisualization.extend({
 
       gl.disable(gl.DEPTH_TEST);
 
-      this.camera = createOrbitCamera([249.44075656132247, 181.72967482804205, -30], [249.44075656132247, 181.72967482804205, 14], [0,1,0])
-      this.shader = createShader(gl, glslify('./shaders/vertex.glsl'), glslify('./shaders/fragment.glsl'));
+      this.camera = createOrbitCamera([187.44075656132247, 130.72967482804205, -30], [187.44075656132247, 130.72967482804205, 14], [0,1,0])
+
+      var vertex = `attribute vec3 position;
+        uniform mat4 model;
+        uniform mat4 view;
+        uniform mat4 projection;
+
+        attribute vec2 texturePosition;
+        varying vec2 texCoord;
+
+        void main() {
+          gl_Position = projection * view * model * vec4(position, 1);
+          texCoord = texturePosition;
+        }
+        `
+
+      var fragment = `precision highp float;
+        uniform sampler2D texture;
+        varying vec2 texCoord;
+        void main() {
+
+          vec4 c = texture2D(texture, texCoord);
+
+          // if (c.r < 0.01) {
+          //   c.a = 0.0;
+          // }
+
+          gl_FragColor = c;
+        }
+        `
+
+      this.shader = createShader(gl, vertex, fragment);
       this.shader.bind();
 
       this.shader.uniforms.resolution = [this.shell.width, this.shell.height];
@@ -115,8 +145,10 @@ var Visualization = LightningVisualization.extend({
       this.shader.attributes.texturePosition.pointer();
 
       this.texture = createTexture(gl, this.data.windowDimensions, gl.LUMINANCE);
+
       this.texture.bind();
       this.shader.uniforms.texture = this.texture;
+
     },
 
     renderGL: function() {
